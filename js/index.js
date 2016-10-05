@@ -1,5 +1,5 @@
 var app = angular.module('submitExample',[]);
-    app.controller('ExampleController', ['$scope','$http', function($scope, $http) {
+app.controller('ExampleController', ['$scope','$http', function($scope, $http) {
 
 	  function GetConversationId()
 	  {
@@ -14,6 +14,9 @@ var app = angular.module('submitExample',[]);
 			.then(function(response) {
 			console.log("Inside GetConversationId");
 				$scope.conversationId = response.data['conversationId'];
+				j('<div class="message loading new"><figure class="avatar"><img src="icon.png" /></figure><span></span></div>').appendTo(j('.mCSB_container'));
+				setTyping();
+				updateScrollbar();
 				setTimeout(function(){ 
 					PostMessage();
 				},1000);
@@ -36,10 +39,7 @@ var app = angular.module('submitExample',[]);
 				}
 			})
 			.success(function(data, status){
-			console.log("Inside PostMessage");
-			
-			  j('<div class="message loading new"><figure class="avatar"><img src="" /></figure><span></span></div>').appendTo(j('.mCSB_container'));
-			  updateScrollbar();
+
 
 			setTimeout(function(){ 
 				GetMessage();
@@ -47,16 +47,16 @@ var app = angular.module('submitExample',[]);
 			});
 		  }
 
-		  function printLetterByLetter(destination, message, speed){
-			var i = 0;
-			var interval = setInterval(function(){
-				document.getElementById(destination).innerHTML += message.charAt(i);
-				i++;
-				if (i > message.length){
-					clearInterval(interval);
-				}
-				}, speed);
-			}
+		  // function printLetterByLetter(destination, message, speed){
+			// var i = 0;
+			// var interval = setInterval(function(){
+				// document.getElementById(destination).innerHTML += message.charAt(i);
+				// i++;
+				// if (i > message.length){
+					// clearInterval(interval);
+				// }
+				// }, speed);
+			// }
 
 		function GetMessage()
 		{
@@ -114,6 +114,10 @@ function setDate() {
   j('<div class="timestamp">' + formatAMPM(d) + '</div>').appendTo(j('.message:last'));
 }
 
+function setTyping() {
+  j('<div class="timestamp">Typing...</div>').appendTo(j('.message:last'));
+}
+
 function insertMessage(msg) {
   if (j.trim(msg) == '') {
     return false;
@@ -122,47 +126,46 @@ function insertMessage(msg) {
   setDate();
   j('.message-input').val(null);
   updateScrollbar();
-  // setTimeout(function () {
-    // botMessage();
-  // }, 1000 + (Math.random() * 20) * 100);
 }
 
-
-// j(window).on('keydown', function (e) {
-  // console.log("keydown detected");
-  // if (e.which == 13) {
-    // console.log("Enter pressed");
-    // insertMessage(j('.message-input').val());
-    // return false;
-  // }
-// })
-
 function botMessage(botmsg) {
-	console.log(botmsg);
   if (j('.message-input').val() != '') {
     return false;
   }
   j('.message.loading').remove();
-    j('<div class="message new"><figure class="avatar"><img src="avatar_round.png" /></figure>' + botmsg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
+  j('.message .timestamp').remove();
+  j('<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>' + botmsg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
+	playSound('bing');
     setDate();
     updateScrollbar();
 }
 
-function maximChatbox() {
-  var e = document.getElementById("minim-chat");
-  e.style.display = "block";
-  var e = document.getElementById("maxi-chat");
-  e.style.display = "none";
-  var e = document.getElementById("chatbox");
-  e.style.margin = "0";
-}
+function playSound(filename) {
+	document.getElementById("sound").innerHTML = '<audio autoplay="autoplay"><source src="' + filename + '.mp3" type="audio/mpeg" /><source src="' + filename + '.ogg" type="audio/ogg" /><embed hidden="true" autostart="true" loop="false" src="' + filename + '.mp3" /></audio>';
+	}
+}]);
 
-function minimChatbox() {
-  var e = document.getElementById("minim-chat");
-  e.style.display = "none";
-  var e = document.getElementById("maxi-chat");
-  e.style.display = "block";
-  var e = document.getElementById("chatbox");
-  e.style.margin = "0 0 -53vh 0";
-}
+app.controller('ChatTitleCtrl', ['$scope', function ($scope) {
+	$scope.maximChatbox = function () {
+		console.log("maxim");
+		var e = document.getElementById("minim-chat");
+		e.style.display = "block";
+		var e = document.getElementById("maxi-chat");
+		e.style.display = "none";
+		var e = document.getElementById("chatbox");
+		e.style.margin = "0";
+		var e = document.getElementById("animHelpText");
+		e.style.display = "none";
+	};
+	$scope.minimChatbox = function () {
+		console.log("minim");
+		var e = document.getElementById("minim-chat");
+		e.style.display = "none";
+		var e = document.getElementById("maxi-chat");
+		e.style.display = "block";
+		var e = document.getElementById("chatbox");
+		e.style.margin = "0 0 -53vh 0";
+		var e = document.getElementById("animHelpText");
+		e.style.display = "block";
+	};
 }]);

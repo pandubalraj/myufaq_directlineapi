@@ -77,7 +77,7 @@ Chat Title
 .chat-title h2 {
   font-weight: normal;
   font-size: 12px;
-  margin: 0;
+  margin: 0 0 0 20px;
   padding: 0;
 }
 
@@ -90,20 +90,19 @@ Chat Title
 .chat-title .avatar {
   position: absolute;
   z-index: 1;
-  top: 6px;
-  left: 6px;
-  border-radius: 30px;
-  width: 35px;
-  height: 35px;
+  top: 10px;
+  left: 12px;
+  width: 50px;
+  height: auto;
   overflow: hidden;
   margin: 0;
   padding: 0;
-  border: 3px solid rgba(255, 255, 255, 0.4);
 }
 
 .chat-title .avatar img {
   width: 100%;
   height: auto;
+  border-radius: 5px;
 }
 
 .chat-title .chat-minmax {
@@ -185,14 +184,14 @@ Messages
   position: absolute;
   z-index: 1;
   bottom: -15px;
-  left: -35px;
+  left: -40px;
   border-radius: 30px;
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
   overflow: hidden;
   margin: 0;
   padding: 0;
-  border: 2px solid rgba(255, 255, 255, 0.24);
+  border: 3px solid rgba(255, 255, 255, 0.4);
 }
 
 .messages .message .avatar img {
@@ -509,4 +508,66 @@ Bounce
     -webkit-transform: translateY(-10px);
     transform: translateY(-10px);
   }
+}
+
+/*--------------------
+Bounce Animations
+--------------------*/
+/*
+ * Animation configurations ( duration and fill mode )
+*/
+.animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+@-webkit-keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {-webkit-transform: translateY(0);}
+    40% {-webkit-transform: translateY(-30px);}
+    60% {-webkit-transform: translateY(-15px);}
+} 
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+    40% {transform: translateY(-30px);}
+    60% {transform: translateY(-15px);}
+} 
+.bounce {
+    -webkit-animation-name: bounce;
+    animation-name: bounce;
+}
+
+#animHelpText{
+    position: fixed;
+    bottom: 50px;
+    right: 30px;
+    color: rgba(170, 6, 20, 1);
+    font-size: 12px;
+    width: 200px;
+    -webkit-box-shadow: 0 8px 6px -6px black;
+    -moz-box-shadow: 0 8px 6px -6px black;
+    box-shadow: 0 8px 6px -6px black;
+    text-align: center;
+    border-radius: 30px;
+    padding: 10px;
+    background-color:rgba(249, 185, 32, 1);
+}
+
+#animHelpText::before {
+    left: auto;
+    right: 0;
+    z-index: 10000;
+    border-right: none;
+    border-left: 5px solid transparent;
+    border-top: 4px solid rgba(170, 6, 20, 1);
+    bottom: -4px;
+}
+
+.button{
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin: 3px;
+    color: rgba(249, 185, 32, 1);
+    background-color: rgba(170, 6, 20, 1);
 }
