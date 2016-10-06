@@ -1,5 +1,5 @@
 var app = angular.module('submitExample',[]);
-app.controller('ExampleController', ['$scope','$http', function($scope, $http) {
+app.controller('ExampleController', ['$scope','$http','$compile', function($scope, $http, $compile) {
 	var i;
 	$scope.id = 0;
 	  function GetConversationId()
@@ -57,9 +57,6 @@ app.controller('ExampleController', ['$scope','$http', function($scope, $http) {
 			  }
 			  else
 			  {
-				 console.log("scope name"+$scope.name);
-				 console.log("convresation id"+$scope.conversationId);
-				 console.log("convresation id"+$scope.fromBot);
 				$http({
 				method: 'POST',
 				headers: {
@@ -91,17 +88,16 @@ app.controller('ExampleController', ['$scope','$http', function($scope, $http) {
 			},
 			url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
 			}).success(function(response){
-				console.log(response["messages"]);
 			getNextID(response["messages"], true);
 			if ($scope.fromBot === undefined) { $scope.fromBot = response["messages"][0]["from"]; } 
 		});
 		}
+	  
 	  var lastTemp = 0;
 	  function getNextID(resp, skipLast){
 		  for(i = 0; i < (resp.length - lastTemp); i++){
 			if(!skipLast){
 				if(resp[i + lastTemp]["text"] === undefined){
-					
 					botMessage(resp[i + lastTemp]["images"][0]);
 				}
 				else{
@@ -164,19 +160,71 @@ function insertMessage(msg) {
   updateScrollbar();
 }
 
-function botMessage(botmsg) {
-	console.log(botmsg);
-  if (j('.message-input').val() != '') {
-    return false;
-  }
-  j('.message.loading').remove();
-    j('.message .timestamp').remove();
-    j('<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>' + botmsg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
-	playSound('bing');
-    setDate();
-    updateScrollbar();
-}
+// function botMessage(botmsg) {
+  // if (j('.message-input').val() != '') {
+    // return false;
+  // }
+  // j('.message.loading').remove();
+    // j('.message .timestamp').remove();
+    // j('<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>' + botmsg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
+	// playSound('bing');
+    // setDate();
+    // updateScrollbar();
+// }
 
+	function botMessage(botmsg) {
+		console.log(botmsg);
+		if (j('.message-input').val() != '') {
+			return false;
+		}
+		j('.message.loading').remove();
+		j('.message .timestamp').remove();
+		var options = getArrayStringBotMsg(botmsg);
+			var actualOptions = '<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>';
+			 if(options.length > 1){
+				 actualOptions += options[0];
+				 for (i = 1; i < options.length; i++) {
+					actualOptions += '<button class="button" ng-click="optionClick(\''+ options[i] +'\')" value="'+options[i]+'">'+options[i]+'</button><br>';
+				}
+			}
+			else if (options.length ==1) {
+				actualOptions += options[0];
+			}
+			// // actualOptions += '</div>';
+		$scope.test(actualOptions);
+		playSound('bing');
+		setDate();
+		updateScrollbar(); 
+	}
+
+	function getArrayStringBotMsg(bmsg){
+		check_bmsg = /\n/.test(bmsg);
+		var bmessage = [];
+		if (check_bmsg === false){
+			bmessage = bmsg.split("\n");
+		}
+		else{
+			bmsg = bmsg.split("\n");
+			bmessage = bmsg.map(function(s){ return s.trim()});
+		}
+		return bmessage;
+	}
+	
+	$scope.test = function(actualOptions) {
+		var el = actualOptions;
+		var element = angular.element(document.querySelector('.mCSB_container'));
+		var generated = element.append(el);
+		$compile(generated.contents())($scope);
+	}
+
+	$scope.optionClick = function(value){
+		var choice_value = value.split(".")[0];
+		$scope.name = choice_value;
+		setTimeout(function(){ 
+			$scope.submit();
+		}, 10);
+	}
+	
 function playSound(filename) {
 		document.getElementById("sound").innerHTML = '<audio autoplay="autoplay"><source src="' + filename + '.mp3" type="audio/mpeg" /><source src="' + filename + '.ogg" type="audio/ogg" /><embed hidden="true" autostart="true" loop="false" src="' + filename + '.mp3" /></audio>';
 	}

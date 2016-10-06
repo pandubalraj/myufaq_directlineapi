@@ -1,6 +1,5 @@
 var app = angular.module('submitExample',[]);
 app.controller('ExampleController', ['$scope','$http', function($scope, $http) {
-
 	  function GetConversationId()
 	  {
 		$http({
