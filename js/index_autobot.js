@@ -10,13 +10,12 @@ app.controller('ExampleController', ['$scope','$http','$compile', function($scop
 				  method: 'POST',
 				  headers: {
 					'Content-Type': 'application/json',
-					'Authorization': 'BotConnector 4c77nGWykYc.cwA.vz0.UCwuwuEYP0XBra9ItKk4VG3bNaOWRXHGHjpYiuGXJQQ'
+					'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 					},
 				  url: 'https://directline.botframework.com/api/conversations'
 				})
 				.then(function(response) {
 					$scope.conversationId = response.data['conversationId'];
-					console.log("Conversation ID: " + $scope.conversationId);
 					j('<div class="message loading new"><figure class="avatar"><img src="icon.png" /></figure><span></span></div>').appendTo(j('.mCSB_container'));
 					setTyping();
 					updateScrollbar();
@@ -41,7 +40,7 @@ app.controller('ExampleController', ['$scope','$http','$compile', function($scop
 				method: 'POST',
 				headers: {
 				'Content-Type': 'application/json',
-				'Authorization': 'BotConnector 4c77nGWykYc.cwA.vz0.UCwuwuEYP0XBra9ItKk4VG3bNaOWRXHGHjpYiuGXJQQ'
+				'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 				},
 				url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
 				data: {
@@ -61,7 +60,7 @@ app.controller('ExampleController', ['$scope','$http','$compile', function($scop
 				method: 'POST',
 				headers: {
 				'Content-Type': 'application/json',
-				'Authorization': 'BotConnector 4c77nGWykYc.cwA.vz0.UCwuwuEYP0XBra9ItKk4VG3bNaOWRXHGHjpYiuGXJQQ'
+				'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 				},
 				url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
 				data: {
@@ -84,7 +83,7 @@ app.controller('ExampleController', ['$scope','$http','$compile', function($scop
 			method: 'GET',
 			headers: {
 			'Content-Type': 'application/json',
-			'Authorization': 'BotConnector 4c77nGWykYc.cwA.vz0.UCwuwuEYP0XBra9ItKk4VG3bNaOWRXHGHjpYiuGXJQQ'
+			'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 			},
 			url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
 			}).success(function(response){
@@ -98,10 +97,10 @@ app.controller('ExampleController', ['$scope','$http','$compile', function($scop
 		  for(i = 0; i < (resp.length - lastTemp); i++){
 			if(!skipLast){
 				if(resp[i + lastTemp]["text"] === undefined){
-					botMessage(resp[i + lastTemp]["images"][0]);
+					botMessage(resp[i + lastTemp]["images"][0], true);
 				}
 				else{
-					botMessage(resp[i + lastTemp]["text"]);
+					botMessage(resp[i + lastTemp]["text"], false);
 				}
 			}
 			skipLast = false;
@@ -160,26 +159,14 @@ function insertMessage(msg) {
   updateScrollbar();
 }
 
-// function botMessage(botmsg) {
-  // if (j('.message-input').val() != '') {
-    // return false;
-  // }
-  // j('.message.loading').remove();
-    // j('.message .timestamp').remove();
-    // j('<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>' + botmsg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
-	// playSound('bing');
-    // setDate();
-    // updateScrollbar();
-// }
-
-	function botMessage(botmsg) {
-		console.log(botmsg);
-		if (j('.message-input').val() != '') {
-			return false;
-		}
+	function botMessage(botmsg, imgOrNot) {
+		// if (j('.message-input').val() != '') {
+			// return false;
+		// }
 		j('.message.loading').remove();
-		j('.message .timestamp').remove();
+		j('.message.timestamp').remove();
 		var options = getArrayStringBotMsg(botmsg);
+		
 			var actualOptions = '<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>';
 			 if(options.length > 1){
 				 actualOptions += options[0];
@@ -188,15 +175,44 @@ function insertMessage(msg) {
 				}
 			}
 			else if (options.length ==1) {
-				actualOptions += options[0];
+				if(!imgOrNot){
+					actualOptions += options[0];
+				}
+				else{
+					console.log("img url = " + "https://directline.botframework.com"+botmsg);
+					actualOptions += '<img width="150" style="border-radius: 5px;" src="'+"https://directline.botframework.com"+botmsg+'" />';
+				}
 			}
-			// // actualOptions += '</div>';
+		actualOptions += '</div>';
+			
+			if(options[0].match("^Find your details")){
+			var carModel, carRegNo, dop, carCost;
+			if(options.length > 1){
+				for (i = 1; i < options.length; i++) {
+					if(options[i].match("^Car Model:")){
+						carModel = options[i].split(":")[1];
+					}
+					else if(options[i].match("^Cost of your Car:")){
+						carCost = options[i].split(":")[1];
+					}
+					else if(options[i].match("^Car Reg No:")){
+						carRegNo = options[i].split(":")[1];
+					}
+					else if(options[i].match("^You purchased car on: ")){
+						dop = options[i].split(":")[1];
+					}
+					else{
+					}
+				}
+			}
+			}
+			j('#details').append("CarModel"+carModel+"carCost"+carCost+"carRegNo"+carRegNo+"DoP"+dop);
 		$scope.test(actualOptions);
 		playSound('bing');
 		setDate();
 		updateScrollbar(); 
 	}
-
+	
 	function getArrayStringBotMsg(bmsg){
 		check_bmsg = /\n/.test(bmsg);
 		var bmessage = [];
@@ -225,14 +241,13 @@ function insertMessage(msg) {
 		}, 10);
 	}
 	
-function playSound(filename) {
+	function playSound(filename) {
 		document.getElementById("sound").innerHTML = '<audio autoplay="autoplay"><source src="' + filename + '.mp3" type="audio/mpeg" /><source src="' + filename + '.ogg" type="audio/ogg" /><embed hidden="true" autostart="true" loop="false" src="' + filename + '.mp3" /></audio>';
 	}
 }]);
 
 app.controller('ChatTitleCtrl', ['$scope', function ($scope) {
 	$scope.maximChatbox = function () {
-		console.log("maxim");
 		var e = document.getElementById("minim-chat");
 		e.style.display = "block";
 		var e = document.getElementById("maxi-chat");
@@ -243,7 +258,6 @@ app.controller('ChatTitleCtrl', ['$scope', function ($scope) {
 		e.style.display = "none";
 	};
 	$scope.minimChatbox = function () {
-		console.log("minim");
 		var e = document.getElementById("minim-chat");
 		e.style.display = "none";
 		var e = document.getElementById("maxi-chat");
