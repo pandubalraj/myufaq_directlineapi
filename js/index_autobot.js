@@ -2,99 +2,99 @@ var app = angular.module('submitExample',[]);
 app.controller('ExampleController', ['$scope','$http','$compile', function($scope, $http, $compile) {
 	var i;
 	$scope.id = 0;
-	  function GetConversationId()
-	  {
-		  if ($scope.name === undefined)
-		  {
+	function GetConversationId()
+	{
+		if ($scope.name === undefined)
+		{
 			$http({
-				  method: 'POST',
-				  headers: {
+				method: 'POST',
+				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
-					},
-				  url: 'https://directline.botframework.com/api/conversations'
-				})
-				.then(function(response) {
-					$scope.conversationId = response.data['conversationId'];
-					j('<div class="message loading new"><figure class="avatar"><img src="icon.png" /></figure><span></span></div>').appendTo(j('.mCSB_container'));
-					setTyping();
-					updateScrollbar();
-					setTimeout(function(){ 
-						PostMessage();
-					},1000);
+				},
+				url: 'https://directline.botframework.com/api/conversations'
+			})
+			.then(function(response) {
+				$scope.conversationId = response.data['conversationId'];
+				j('<div class="message loading new"><figure class="avatar"><img src="icon.png" /></figure><span></span></div>').appendTo(j('.mCSB_container'));
+				setTyping();
+				updateScrollbar();
+				setTimeout(function(){ 
+					PostMessage();
+				},1000);
 			});
-		  }
-		  else
-		  {
+		}
+		else
+		{
 			setTimeout(function(){ 
 				PostMessage();
 			},1000);
-		  }
-	  }
+		}
+	}
 
-	  function PostMessage()
-		  {
-			  if ($scope.name === undefined)
-			  {
-				$http({
+	function PostMessage()
+	{
+		if ($scope.name === undefined)
+		{
+			$http({
 				method: 'POST',
 				headers: {
-				'Content-Type': 'application/json',
-				'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
+					'Content-Type': 'application/json',
+					'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 				},
 				url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
 				data: {
-				"conversationId":$scope.conversationId,
-				"text": "Hi"
+					"conversationId":$scope.conversationId,
+					"text": "Hi"
 				}
-				})
-				.success(function(data, status){
+			})
+			.success(function(data, status){
 				setTimeout(function(){ 
 					GetMessage();
 				}, 3000);
-				});	  
-			  }
-			  else
-			  {
-				$http({
+			});	  
+		}
+		else
+		{
+			$http({
 				method: 'POST',
 				headers: {
-				'Content-Type': 'application/json',
-				'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
+					'Content-Type': 'application/json',
+					'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 				},
 				url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
 				data: {
-				"conversationId":$scope.conversationId,
-				"text":$scope.name,
-				"from":$scope.fromBot
+					"conversationId":$scope.conversationId,
+					"text":$scope.name,
+					"from":$scope.fromBot
 				}
-				})
-				.success(function(data, status){
-					setTimeout(function(){ 
+			})
+			.success(function(data, status){
+				setTimeout(function(){ 
 					GetMessage();
 				}, 3000);
-				});
-			  }
-		  }
-		
-		function GetMessage()
-		{
+			});
+		}
+	}
+	
+	function GetMessage()
+	{
 		$http({
 			method: 'GET',
 			headers: {
-			'Content-Type': 'application/json',
-			'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
+				'Content-Type': 'application/json',
+				'Authorization': 'BotConnector PAVD6YtojIg.cwA.hSc.GXT_QR0-q289KPPes7I06lVrN-y2YwX5AaUoeD_uaUg'
 			},
 			url: 'https://directline.botframework.com/api/conversations/'+$scope.conversationId+'/messages',
-			}).success(function(response){
+		}).success(function(response){
 			getNextID(response["messages"], true);
 			if ($scope.fromBot === undefined) { $scope.fromBot = response["messages"][0]["from"]; } 
 		});
-		}
-	  
-	  var lastTemp = 0;
-	  function getNextID(resp, skipLast){
-		  for(i = 0; i < (resp.length - lastTemp); i++){
+	}
+	
+	var lastTemp = 0;
+	function getNextID(resp, skipLast){
+		for(i = 0; i < (resp.length - lastTemp); i++){
 			if(!skipLast){
 				if(resp[i + lastTemp]["text"] === undefined){
 					botMessage(resp[i + lastTemp]["images"][0], true);
@@ -104,36 +104,36 @@ app.controller('ExampleController', ['$scope','$http','$compile', function($scop
 				}
 			}
 			skipLast = false;
-		  }
-		  lastTemp = resp.length;
-	  }
-	  
-	  $scope.submit = function() {	
+		}
+		lastTemp = resp.length;
+	}
+	
+	$scope.submit = function() {	
 		insertMessage(j('.message-input').val());
 		if ($scope.name) {
 			GetConversationId();
 		}
-      }
-	  
-var messages = j('.messages-content'), d, i = 0, msg = "", botmsg = "";
+	}
+	
+	var messages = j('.messages-content'), d, i = 0, msg = "", botmsg = "";
 
-j(window).load(function () {
-  messages.mCustomScrollbar();
-  GetConversationId();
-});
+	j(window).load(function () {
+		messages.mCustomScrollbar();
+		GetConversationId();
+	});
 
-function updateScrollbar() {
-  messages.mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
-    scrollInertia: 10,
-    timeout: 0
-  });
-}
+	function updateScrollbar() {
+		messages.mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
+			scrollInertia: 10,
+			timeout: 0
+		});
+	}
 
-function formatAMPM(date) {
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var ampm = hours >= 12 ? 'pm' : 'am';
-  hours = hours % 12;
+	function formatAMPM(date) {
+		var hours = date.getHours();
+		var minutes = date.getMinutes();
+		var ampm = hours >= 12 ? 'pm' : 'am';
+		hours = hours % 12;
   hours = hours ? hours : 12; // the hour '0' should be '12'
   minutes = minutes < 10 ? '0'+minutes : minutes;
   var strTime = hours + ':' + minutes + ' ' + ampm;
@@ -141,25 +141,25 @@ function formatAMPM(date) {
 }
 
 function setDate() {
-  d = new Date();
-  j('<div class="timestamp">' + formatAMPM(d) + '</div>').appendTo(j('.message'));
+	d = new Date();
+	j('<div class="timestamp">' + formatAMPM(d) + '</div>').appendTo(j('.message'));
 }
 
 function setTyping() {
-  j('<div class="timestamp">Typing...</div>').appendTo(j('.message:last'));
+	j('<div class="timestamp">Typing...</div>').appendTo(j('.message:last'));
 }
 
 function insertMessage(msg) {
-  if (j.trim(msg) == '') {
-    return false;
-  }
-  j('<div class="message message-personal">' + msg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
-  setDate();
-  j('.message-input').val(null);
-  updateScrollbar();
+	if (j.trim(msg) == '') {
+		return false;
+	}
+	j('<div class="message message-personal">' + msg + '</div>').appendTo(j('.mCSB_container')).addClass('new');
+	setDate();
+	j('.message-input').val(null);
+	updateScrollbar();
 }
 
-	function botMessage(botmsg, imgOrNot) {
+function botMessage(botmsg, imgOrNot) {
 		// if (j('.message-input').val() != '') {
 			// return false;
 		// }
@@ -167,25 +167,25 @@ function insertMessage(msg) {
 		j('.message.timestamp').remove();
 		var options = getArrayStringBotMsg(botmsg);
 		
-			var actualOptions = '<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>';
-			 if(options.length > 1){
-				 actualOptions += options[0];
-				 for (i = 1; i < options.length; i++) {
-					actualOptions += '<button class="button" ng-click="optionClick(\''+ options[i] +'\')" value="'+options[i]+'">'+options[i]+'</button><br>';
-				}
+		var actualOptions = '<div class="message new"><figure class="avatar"><img src="icon.png" /></figure>';
+		if(options.length > 1){
+			actualOptions += options[0];
+			for (i = 1; i < options.length; i++) {
+				actualOptions += '<button class="button" ng-click="optionClick(\''+ options[i] +'\')" value="'+options[i]+'">'+options[i]+'</button><br>';
 			}
-			else if (options.length ==1) {
-				if(!imgOrNot){
-					actualOptions += options[0];
-				}
-				else{
-					console.log("img url = " + "https://directline.botframework.com"+botmsg);
-					actualOptions += '<img width="150" style="border-radius: 5px;" src="'+"https://directline.botframework.com"+botmsg+'" />';
-				}
+		}
+		else if (options.length ==1) {
+			if(!imgOrNot){
+				actualOptions += options[0];
 			}
+			else{
+				console.log("img url = " + "https://directline.botframework.com"+botmsg);
+				actualOptions += '<img width="150" style="border-radius: 5px;" src="'+"https://directline.botframework.com"+botmsg+'" />';
+			}
+		}
 		actualOptions += '</div>';
-			
-			if(options[0].match("^Find your details")){
+		
+		if(options[0].match("^Find your details")){
 			var carModel, carRegNo, dop, carCost;
 			if(options.length > 1){
 				for (i = 1; i < options.length; i++) {
@@ -205,8 +205,8 @@ function insertMessage(msg) {
 					}
 				}
 			}
-			}
-			j('#details').append("CarModel"+carModel+"carCost"+carCost+"carRegNo"+carRegNo+"DoP"+dop);
+		}
+		j('#details').append("CarModel"+carModel+"carCost"+carCost+"carRegNo"+carRegNo+"DoP"+dop);
 		$scope.test(actualOptions);
 		playSound('bing');
 		setDate();
